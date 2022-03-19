@@ -15,6 +15,8 @@ import (
 func Swap(dir string, wg *sync.WaitGroup) {
 	ch_min := make(chan struct{})
 	ch_max := make(chan struct{})
+	var wg1 sync.WaitGroup
+	files_num := []int{}
 	min := 1000
 	max := 0
 
@@ -22,7 +24,6 @@ func Swap(dir string, wg *sync.WaitGroup) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	files_num := []int{}
 
 	for _, file := range files {
 		if strings.Contains(file.Name(), ".log") {
@@ -68,16 +69,27 @@ func Swap(dir string, wg *sync.WaitGroup) {
 		log.Fatal("error with open file")
 	}
 
-	for _, j := range max_data {
-		wg.Add(1)
-		go Write(j, min_file, wg, ch_min)
-		<-ch_min
-	}
-	for _, j := range min_data {
-		wg.Add(1)
-		go Write(j, max_file, wg, ch_max)
-		<-ch_max
-	}
+	wg1.Add(2)
+
+	go func() {
+		for _, j := range max_data {
+			wg.Add(1)
+			go Write(j, min_file, wg, ch_min)
+			<-ch_min
+		}
+		wg1.Done()
+	}()
+
+	go func() {
+		for _, j := range min_data {
+			wg.Add(1)
+			go Write(j, max_file, wg, ch_max)
+			<-ch_max
+		}
+		wg1.Done()
+	}()
+
+	wg1.Wait()
 }
 
 func Write(b byte, file *os.File, wg *sync.WaitGroup, ch chan struct{}) {
