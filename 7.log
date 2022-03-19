@@ -1,5 +1,1 @@
-Let's make a Go 1-compatible list of all the ways to read and write files in Go.
-
-Because file API has changed recently and most other answers don't work with Go 1. They also miss bufio which is important IMHO.
-
-In the following examples I copy a file by reading from it and writing to the destination file.
+Aleks Tet
