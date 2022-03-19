@@ -18,7 +18,7 @@ func Swap(dir string, wg *sync.WaitGroup) {
 	var wg1 sync.WaitGroup
 	files_num := []int{}
 	min := 1000
-	max := 0
+	max := -1000
 
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
