@@ -28,7 +28,7 @@ func Swap(dir string, wg *sync.WaitGroup) {
 			continue
 		}
 		if strings.HasSuffix(file.Name(), ".log") {
-			num, err := strconv.Atoi(file.Name()[:len(file.Name())-4])
+			num, err := strconv.Atoi(strings.TrimRight(file.Name(), ".log"))
 			if err != nil {
 				log.Fatal(err)
 			}
