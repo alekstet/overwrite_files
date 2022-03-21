@@ -17,8 +17,6 @@ func Swap(dir string, wg *sync.WaitGroup) {
 	ch_max := make(chan struct{})
 	var wg1 sync.WaitGroup
 	files_num := []int{}
-	min := 1000
-	max := -1000
 
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -26,7 +24,10 @@ func Swap(dir string, wg *sync.WaitGroup) {
 	}
 
 	for _, file := range files {
-		if strings.Contains(file.Name(), ".log") {
+		if file.IsDir() {
+			continue
+		}
+		if strings.HasSuffix(file.Name(), ".log") {
 			num, err := strconv.Atoi(file.Name()[:len(file.Name())-4])
 			if err != nil {
 				log.Fatal(err)
@@ -38,12 +39,15 @@ func Swap(dir string, wg *sync.WaitGroup) {
 		log.Fatalf("directory have only %v files, at least we should have 2 one", len(files_num))
 	}
 
-	for _, v := range files_num {
-		if v < min {
-			min = v
+	min := files_num[0]
+	max := files_num[0]
+
+	for _, j := range files_num {
+		if j < min {
+			min = j
 		}
-		if v > max {
-			max = v
+		if j > max {
+			max = j
 		}
 	}
 
